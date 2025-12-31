@@ -1,0 +1,23 @@
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import HomeScreen from "../screens/main/HomeScreen";
+
+const Stack = createNativeStackNavigator();
+
+export default function AppStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#020617",
+        },
+        headerTitleStyle: {
+          color: "#22c55e",
+          fontWeight: "700",
+        },
+        headerTintColor: "#e5e7eb",
+      }}
+    >
+      <Stack.Screen name="Home" component={HomeScreen} />
+    </Stack.Navigator>
+  );
+}
