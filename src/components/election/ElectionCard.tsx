@@ -1,11 +1,6 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface Props {
   election: any;
@@ -41,8 +36,7 @@ const ElectionCard = ({ election, isAdmin, onEdit, onDelete }: Props) => {
 
       {/* Time */}
       <Text style={styles.time}>
-        ⏱ {election.electionInfo?.startTime} -{" "}
-        {election.electionInfo?.endTime}
+        ⏱ {election.electionInfo?.startTime} - {election.electionInfo?.endTime}
       </Text>
 
       {/* Candidates */}
@@ -60,10 +54,10 @@ const ElectionCard = ({ election, isAdmin, onEdit, onDelete }: Props) => {
         <Text
           style={[
             styles.status,
-            { color: election.isActive ? "#22c55e" : "#ef4444" },
+            { color: election.isActive ? '#22c55e' : '#ef4444' },
           ]}
         >
-          {election.isActive ? "Active" : "Inactive"}
+          {election.isActive ? 'Active' : 'Inactive'}
         </Text>
       </View>
     </View>
@@ -73,55 +67,55 @@ const ElectionCard = ({ election, isAdmin, onEdit, onDelete }: Props) => {
 export default ElectionCard;
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#0f172a",
+    backgroundColor: '#0f172a',
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
-    color: "#e5e7eb",
+    color: '#e5e7eb',
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     flex: 1,
   },
   actions: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   description: {
-    color: "#94a3b8",
+    color: '#94a3b8',
     marginTop: 8,
   },
   time: {
-    color: "#64748b",
+    color: '#64748b',
     marginTop: 6,
     fontSize: 12,
   },
   subTitle: {
     marginTop: 14,
-    color: "#38bdf8",
-    fontWeight: "600",
+    color: '#38bdf8',
+    fontWeight: '600',
   },
   candidate: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 6,
   },
   candidateName: {
-    color: "#e5e7eb",
+    color: '#e5e7eb',
   },
   party: {
-    color: "#94a3b8",
+    color: '#94a3b8',
   },
   statusRow: {
     marginTop: 12,
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   status: {
-    fontWeight: "700",
+    fontWeight: '700',
   },
 });

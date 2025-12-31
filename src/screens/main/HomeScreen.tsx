@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,24 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/rootReducer';
-import { getAllElections } from '../../api/electionApi';
+import { getAllElections, deleteElection } from '../../api/electionApi';
 import ElectionCard from '../../components/election/ElectionCard';
 import { useFocusEffect } from '@react-navigation/native';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import { logout } from '../../redux/auth/authSlice';
 
 const HomeScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch();
   const { role } = useSelector((state: RootState) => state.auth);
   const isAdmin = role === 'admin';
 
   const [elections, setElections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -38,6 +44,31 @@ const HomeScreen = ({ navigation }: any) => {
     }
   };
 
+  const confirmDelete = (id: string) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      setLoading(true);
+      await deleteElection(deleteId);
+      setShowConfirm(false);
+      setDeleteId(null);
+      fetchElections(); // refresh
+    } catch (e) {
+      console.log('Delete failed', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -52,34 +83,60 @@ const HomeScreen = ({ navigation }: any) => {
       <View style={styles.header}>
         <Text style={styles.heading}>Elections</Text>
 
-        {isAdmin && (
-          <TouchableOpacity
-            style={styles.createBtn}
-            onPress={() => navigation.navigate("CreateElection", { mode: "create" })}
-          >
-            <Text style={styles.createText}>+ Create</Text>
+        <View style={{ flexDirection: 'row' }}>
+          {isAdmin && (
+            <TouchableOpacity
+              style={styles.createBtn}
+              onPress={() =>
+                navigation.navigate('CreateElection', { mode: 'create' })
+              }
+            >
+              <Text style={styles.createText}>+ Create</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
-        )}
+        </View>
       </View>
 
       <FlatList
         data={elections}
         keyExtractor={item => item._id}
         renderItem={({ item }) => (
-          <ElectionCard
-            election={item}
-            isAdmin={isAdmin}
-            onEdit={() =>
-              navigation.navigate('CreateElection', {
-                mode: 'edit',
-                election: item,
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              navigation.navigate('ElectionDetail', {
+                electionId: item._id,
               })
             }
-            onDelete={() => console.log('Delete', item._id)}
-          />
+          >
+            <ElectionCard
+              election={item}
+              isAdmin={isAdmin}
+              onEdit={() =>
+                navigation.navigate('CreateElection', {
+                  mode: 'edit',
+                  election: item,
+                })
+              }
+              onDelete={() => confirmDelete(item._id)}
+            />
+          </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
+      />
+
+      {/* Delete Confirmation */}
+      <ConfirmModal
+        visible={showConfirm}
+        title="Delete Election"
+        message="Are you sure you want to delete this election? This action cannot be undone."
+        onCancel={() => setShowConfirm(false)}
+        onConfirm={handleDelete}
       />
     </View>
   );
@@ -119,5 +176,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#020617',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoutBtn: {
+    marginLeft: 10,
+    backgroundColor: '#1e293b',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  logoutText: {
+    color: '#e5e7eb',
+    fontWeight: '600',
   },
 });
